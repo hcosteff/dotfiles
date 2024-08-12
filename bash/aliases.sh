@@ -1,11 +1,27 @@
 # Source global definitions
 
 alias grpe=grep
-
-
-
 alias gdt="git difftool"
 alias gmt="git mergetool"
+
+
+alias dotalias="sub ~/.dotfiles/bash/aliases.sh"
+alias dotrun="sub ~/.dotfiles/bash/run.sh"
+
+alias dotinst="sub ~/.dotfiles/install.sh"
+alias dotv="sub ~/.dotfiles/config/nvim/init.vim"
+alias dotgit="sub ~/.dotfiles/config/gitconfig"
+alias dotzshrc="sub ~/.dotfiles/config/zshrc"
+
+alias dotuseful="sub ~/.dotfiles/ipython_startup/useful.py"
+alias dotunpolished="sub ~/.dotfiles/ipython_startup/unpolished.py"
+
+alias dotsheepdog="sub ~/.dotfiles/bin/sheepdog"
+
+alias dotjankyborders="sub ~/.dotfiles/config/bordersrc"
+alias dotyabai="sub ~/.dotfiles/config/yabairc"
+alias dotskhd="sub ~/.dotfiles/config/skhdrc"
+
 
 function glg() {
     git lg | head -n10000 | grep "$(git rev-parse --short $(git getbase))" -B 999
