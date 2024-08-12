@@ -1,0 +1,81 @@
+# This is Git's per-user configuration file.
+[user]
+    name = Hillel Costeff
+    email = hillel@vastdata.com
+
+[diff]
+    tool = bc3
+[difftool "bc3"]
+    trustExitCode = true
+[merge]
+    tool = bc3
+[mergetool "bc3"]
+    trustExitCode = true
+
+[core]
+    editor = 'nano'
+    wordRegex = [A-Za-z_0-9@]+|[^[:space:]]
+	untrackedCache = true
+
+
+[alias]
+    # vast specific
+    pipehash = "!f() { : git log ; echo `scripts/pipe2hash.sh $1`; }; f"
+    pipelg = "!f() { : git log ; git lg `scripts/pipe2hash.sh $1`; }; f"
+
+    #shortcuts
+    cam = commit --amend
+    co = checkout
+    cob = checkout -b
+    br = branch
+    st = status
+    cp = cherry-pick
+    lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+    #create "base" branch on most recent merge
+    getbase = rev-list --min-parents=2 --max-count=1 HEAD
+
+    createbase = "!f() { : git branch ; git branch -q -D base ; git branch base `git getbase`; }; f"
+    #interactive rebase until "base" branch
+    rbb = "!f() { git rebase -i `git getbase`; }; f"
+    logbase = "!f() { git lg `git getbase`^..HEAD; }; f"
+
+    # slightly esoteric commands
+    listbranches = branch --list --sort=-committerdate --format='%(HEAD) %(color:red)%(objectname:short)%(color:reset) - %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) - %(color:bold blue)<%(authorname)>%(color:reset)  (%(color:green)%(committerdate:relative)%(color:reset))'
+
+    grepbranches = "!f() { git grep $1 $(git branch --list --sort=-committerdate  --format='%(refname:short)');}; f"
+    reflogbranch = log -g --abbrev-commit --pretty=oneline
+    rl = reflog --pretty=reflog
+
+    oldest-ancestor = !zsh -c 'diff -u <(git rev-list --first-parent "${1:-master}") <(git rev-list --first-parent "${2:-HEAD}") | sed -ne \"s/^ //p\" | head -1' -
+    find-merge = "!sh -c 'commit=$0 && branch=${1:-HEAD} && (git rev-list $commit..$branch --ancestry-path | cat -n; git rev-list $commit..$branch --first-parent | cat -n) | sort -k2 -s | uniq -f1 -d | sort -n | tail -1 | cut -f2'"
+    show-merge = "!sh -c 'merge=$(git find-merge $0 $1) && [ -n \"$merge\" ] && git show $merge'"
+
+    pipes = !glim from-alias pipelines
+    jobs = !glim from-alias jobs
+
+    when2 = !
+
+    when = !date -r $(stat -f '%m' .git/FETCH_HEAD)
+[help]
+    autocorrect = 1
+[branch]
+    autosetuprebase = always
+[color]
+    ui = auto
+[push]
+    default = tracking
+[difftool]
+    prompt = false
+[mergetool]
+    keepBackup = false
+[pretty]
+    reflog = %C(auto)%h %<|(20)%gd %C(blue)%cr%C(reset) %gs (%s)
+[sequence]
+    #  npm install -g rebase-editor
+    editor = rebase-editor
+[rerere]
+    enabled = false
+
+[checkout]
+    workers = 32

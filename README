@@ -1,0 +1,4 @@
+Personal dotfiles
+Quick Install
+
+git clone --depth=1 https://github.com/hcosteff/dotfiles.git ~/.dotfiles; ~/.dotfiles/install.sh -y

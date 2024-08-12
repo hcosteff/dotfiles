@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+# Docker names generator, Python port
+# https://github.com/shamrin/namesgenerator
+# Copyright (c) 2017 Alexey Shamrin
+# MIT License
+
+import random
+
+right = ['ox', 'ant', 'ape', 'bat', 'bee', 'cat', 'cow', 'dog', 'dox', 'eel', 'eft', 'elk', 'emu', 'fly', 'fox', 'gar', 'gnu', 'hen', 'jay', 'mau', 'olm', 'owl', 'pig', 'pug', 'rat', 'rex', 'yak', 'aidi', 'ainu', 'anoa', 'bear', 'bird', 'boar', 'brug', 'buck', 'bugs', 'bull', 'calf', 'clam', 'colt', 'crab', 'crow', 'dane', 'deer', 'dodo', 'douc', 'dove', 'duck', 'fawn', 'fish', 'flea', 'foal', 'frog', 'gaur', 'gnat', 'goat', 'gull', 'hare', 'hawk', 'hind', 'ibex', 'ibis', 'jack', 'kiwi', 'kudu', 'lamb', 'lark', 'lion', 'loon', 'lynx', 'mara', 'mare', 'mink', 'mole', 'moth', 'mudi', 'mule', 'napu', 'newt', 'orca', 'oryx', 'oxen', 'paca', 'pika', 'pudu', 'puma', 'pumi', 'rusa', 'seal', 'swan', 'tang', 'tick', 'titi', 'toad', 'tuna', 'unau', 'vole', 'wasp', 'wolf', 'worm', 'wren', 'zebu']
+left = ['dim', 'fun', 'sad', 'shy', 'zen', 'bold', 'busy', 'calm', 'cool', 'edgy', 'eoan', 'epic', 'evil', 'fair', 'firm', 'fool', 'good', 'keen', 'kind', 'lazy', 'loud', 'mean', 'neat', 'nice', 'nosy', 'rude', 'sane', 'soft', 'tidy', 'vain', 'weak', 'wild', 'wily', 'wise', 'zany', 'alert', 'angry', 'bleak', 'bossy', 'brave', 'catty', 'clean', 'cocky', 'crazy', 'cruel', 'dense', 'disco', 'eager', 'flaky', 'frank', 'funny', 'goofy', 'great', 'gutsy', 'happy', 'hardy', 'hoary', 'idiot', 'jaded', 'jammy', 'jolly', 'kooky', 'loyal', 'lucid', 'lucky', 'messy', 'moody', 'naive', 'nasty', 'natty', 'nifty', 'noble', 'petty', 'proud', 'quick', 'quiet', 'rowdy', 'saucy', 'sharp', 'silly', 'smart', 'stoic', 'sweet', 'timid', 'tough', 'vivid', 'warty', 'witty', 'zesty']
+
+def get_random_name(sep='_', capitalize=False):
+    r = random.SystemRandom()
+    while 1:
+        ln = r.choice(left)
+        rn = r.choice(right)
+        if capitalize:
+          ln = ln.capitalize()
+          rn = rn.capitalize()
+        name = '%s%s%s' % (ln, sep, rn)
+        if name == 'boring' + sep + 'wozniak': # Steve Wozniak is not boring
+            continue
+        return name
+
+if __name__ == '__main__':
+    print(get_random_name(' ', capitalize=True))

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+items=("4285F4" "EA4335" "FBBC05" "34A853")
+day_of_year=$(date +%j)
+array_length=${#items[@]}
+#index=$((RANDOM % array_length))
+index=$((day_of_year % array_length))
+selected_item=${items[$index]}
+
+borders style=round width=15 hidpi=off active_color=0xa0$selected_item inactive_color=0x00414550
+

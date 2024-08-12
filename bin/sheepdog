@@ -1,0 +1,231 @@
+#!/usr/bin/env python3
+
+import iterm2
+import argparse
+import os, sys
+import shelve
+import shellescape
+import datetime
+
+def get_config_file():
+    config_dir = os.path.expanduser("~/.config/sheepdog")
+    if not os.path.exists(config_dir):
+        os.makedirs(config_dir)
+    config_file = os.path.join(config_dir, "saved_cluster.shelve")
+    return config_file
+
+def ask_for_confirmation(prompt="Override existing? (Y/n): "):
+    while True:
+        user_input = input(prompt).strip()
+        if user_input == 'no' or user_input == 'n':
+            return False
+        else:
+            return True
+
+
+g_args = None
+
+
+async def async_main(connection):
+    app = await iterm2.async_get_app(connection)
+    window = app.current_window
+    tab = window.current_tab
+    left_column = tab.current_session
+    profile = await left_column.async_get_profile()
+    profile = profile.name
+    right_column = None if g_args.dryrun else await left_column.async_split_pane(vertical=True, profile=profile)
+
+    sessions_to_send = [left_column, right_column]
+
+    left_tabs = (len(g_args.ips)-2)//2
+    right_tabs = len(g_args.ips)-2-left_tabs
+    for i in range(left_tabs):
+        sess = None if g_args.dryrun else await left_column.async_split_pane(vertical=False, profile=profile)
+        sessions_to_send.append(sess)
+    for i in range(right_tabs):
+        sess = None if g_args.dryrun else await right_column.async_split_pane(vertical=False, profile=profile)
+        sessions_to_send.append(sess)
+
+    if g_args.dryrun:
+        print("Commands:")
+
+    for i, session, ip in zip(range(len(g_args.ips)), sessions_to_send, g_args.ips):
+        if g_args.commands:
+            cmd = g_args.commands[i]
+        else:
+            cmd = None
+        command = cmd if cmd else f"export NODE_ID=node_id_{ip}_index_{i}; export I={i}; bash"
+
+        ssh_cmd = f"ssh {g_args.ssh_args} {ip} -t {shellescape.quote(command)}"
+        if g_args.dryrun:
+            print(command)
+        else:
+            await session.async_send_text(ssh_cmd+'\n', suppress_broadcast=True)
+            if cmd:
+                await session.async_send_text(f'BREADCRUMB="{ssh_cmd}"\n', suppress_broadcast=True)
+
+
+def conf():
+    ips = []
+    for i in g_args.ips:
+        ips.extend(i.split(','))
+    g_args.ips = ips
+
+   
+    g_args.commands = None
+    if g_args.ccmd or g_args.cmd:
+        if g_args.ccmd:
+            with shelve.open(get_config_file()) as db:
+                g_args.commands = db[g_args.command]['commands']        
+        elif g_args.cmd is True:
+            print("Enter/Paste commands. Ctrl-D or Ctrl-Z ( windows ) to save it.")
+            commands = []
+            while True:
+                try:
+                    line = input()
+                except EOFError:
+                    break
+                commands.append(line)
+
+            commands = [c for c in commands if c]
+            g_args.commands = commands
+        
+        if len(g_args.ips) < len(g_args.commands):
+            print("more commands than IPs, filling IPs with repeating the last one")
+            while len(g_args.ips) < len(g_args.commands):
+                g_args.ips.append(g_args.ips[-1])
+
+    with shelve.open(get_config_file()) as db:
+        if g_args.cluster_name in db.keys():
+            if not ask_for_confirmation(f"Override existing ({db[g_args.cluster_name]})? (Y/n): "):
+                print(f"NOT saving")
+                sys.exit(1)
+
+        db[g_args.cluster_name] = {'ips':g_args.ips, 'ssh_args':g_args.ssh_args, 'commands':g_args.commands, 'last_used':datetime.datetime.now()}
+        print(f"saving {g_args.cluster_name} as {db[g_args.cluster_name]}")
+
+
+def td_format(td_object):
+    seconds = int(td_object.total_seconds())
+    periods = [
+        ('year',        60*60*24*365),
+        ('month',       60*60*24*30),
+        ('day',         60*60*24),
+        ('hour',        60*60),
+        ('minute',      60),
+        ('second',      1)
+    ]
+
+    strings=[]
+    for period_name, period_seconds in periods:
+        if seconds > period_seconds:
+            period_value , seconds = divmod(seconds, period_seconds)
+            has_s = 's' if period_value > 1 else ''
+            strings.append("%s %s%s" % (period_value, period_name, has_s))
+
+    return ", ".join(strings)
+
+
+
+def print_recently_used_clusters():
+        print(f"Cluster {g_args.cluster_name} not found, last used clusers")
+        with shelve.open(get_config_file()) as db:
+            last_used = reversed(sorted(db.items(), key=lambda x: x[1]['last_used'])[-10:])
+            for item in last_used:
+                cluster_name, cluster = item
+                td = datetime.datetime.now() - cluster['last_used']
+                has_command = "" if not cluster['commands'] else "(w/commands)"
+                print(f"{cluster_name:30} used {td_format(td)} ago {has_command}")
+
+
+def go():
+    with shelve.open(get_config_file()) as db:
+        if g_args.cluster_name not in db.keys():
+            print_recently_used_clusters()
+            return
+
+    
+        print(f"Using cluster {g_args.cluster_name}={db[g_args.cluster_name]}")
+        g_args.ips = db[g_args.cluster_name]['ips']
+        g_args.ssh_args = db[g_args.cluster_name]['ssh_args']
+        if 'commands' in db[g_args.cluster_name]:
+            g_args.commands = db[g_args.cluster_name]['commands']
+        else:
+            g_args.commands = None
+    
+        with shelve.open(get_config_file(), writeback=True) as db:
+            db[g_args.cluster_name]["last_used"] = datetime.datetime.now()
+
+        iterm2.run_until_complete(async_main)
+
+def show():  
+    with shelve.open(get_config_file()) as db:
+        if g_args.cluster_name not in db.keys():
+            print_recently_used_clusters()
+            return
+
+    with shelve.open(get_config_file()) as db:
+        cluster = db[g_args.cluster_name]
+        args = ''
+        if 'ips' in cluster.keys():
+            args += ' '.join(cluster['ips']) + ' '
+        if 'ssh_args' in cluster.keys():
+            args += f"-sa \"{cluster['ssh_args']}\" "
+        if 'commands' in cluster.keys():
+            args += f"--cmd"
+
+        print(f"{sys.argv[0]} conf {g_args.cluster_name} {args}")
+        if 'commands' in cluster.keys():
+            print("="*80)
+            print("Commands:")
+            for cmd in cluster['commands']:
+                print(cmd)
+
+def main():
+    def add_options(subparser):
+        subparser.add_argument("ips", nargs="+", help="List of IP addresses")
+        subparser.add_argument("-sa", "--ssh-args", default='', help="Additional arguments for SSH command")
+        subparser.add_argument('-c', '--cmd', action="store_true", help='Prompt for commands to run on each of the IPs')
+        subparser.add_argument('-cc', '--ccmd', type=str, help='Copy commands from a saved cluster')
+
+    if len(sys.argv) == 2:
+        potential_match_cluster_name = sys.argv[1]
+        with shelve.open(get_config_file()) as db:
+            if potential_match_cluster_name in db.keys():
+                sys.argv.insert(1, "go")
+
+    global g_args
+    parser = argparse.ArgumentParser(description="Sheepdog - Split iterm into multiple terminal panes and SSH into each of them by config")
+    subparsers = parser.add_subparsers(dest='command', help='Subcommands')
+
+    subparser_conf = subparsers.add_parser('conf', help='Create new cluster')
+    subparser_conf.add_argument("cluster_name", help="Name of the cluster")
+    add_options(subparser_conf)
+    
+    subparser_try = subparsers.add_parser('try', help='Quickly try something out')
+    subparser_try.add_argument('-d', '--dryrun', action="store_true", help='dryrun')
+    add_options(subparser_try)
+    
+    subparser_go = subparsers.add_parser('go', aliases=['g'], help='Go to cluster')
+    subparser_go.add_argument("cluster_name", nargs="?", help="Name of the cluster")
+    subparser_go.add_argument('-d', '--dryrun', action="store_true", help='dryrun')
+
+    subparser_go = subparsers.add_parser('show', aliases=['s'], help='Show cluster')
+    subparser_go.add_argument("cluster_name", nargs="?", help="Name of the cluster")
+
+    g_args = parser.parse_args()
+
+    if 'conf'.startswith(g_args.command):
+        conf()
+    elif 'try'.startswith(g_args.command):
+        conf()
+    elif 'go'.startswith(g_args.command):
+        go()
+    elif 'show'.startswith(g_args.command):
+        show()
+    else:
+        parser.print_help()
+
+
+if __name__ == "__main__":
+    main()
