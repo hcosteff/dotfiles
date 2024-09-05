@@ -56,7 +56,7 @@ async def async_main(connection):
             cmd = None
         command = cmd if cmd else f"export NODE_ID=node_id_{ip}_index_{i}; export I={i}; bash"
 
-        ssh_cmd = f"ssh {g_args.ssh_args} {ip} -t {shellescape.quote(command)}"
+        ssh_cmd = f"export N={g_args.cluster_name}; export I={i}; alias qsheepdog='[ $I -eq '0' ] || exit'; ssh {g_args.ssh_args} {ip} -t {shellescape.quote(command)}"
         if g_args.dryrun:
             print(command)
         else:
