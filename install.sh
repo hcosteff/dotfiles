@@ -46,8 +46,8 @@ run_command_if_not_exists() {
   shift
   title "$@"
   "$@"
-} 
- 
+}
+
 if command -v apt-get &> /dev/null; then
   INST="sudo apt-get install -y"
 elif command -v yum &> /dev/null; then
@@ -61,11 +61,33 @@ fi
 
 title "Will install using '$INST'"
 
+if command -v apt-get &> /dev/null; then
+  run_command $INST python3-ipython
+elif command -v yum &> /dev/null; then
+  run_command $INST python3-ipython
+elif command -v brew &> /dev/null; then
+  run_command $INST ipython
+else
+  error "None of apt-get, yum, or brew are installed"
+  exit 1
+fi
 
-run_command $INST ipython
+
 run_command_if_not_exists $HOME/.ipython/profile_default/startup ln -s $HOME/.dotfiles/ipython_startup/ $HOME/.ipython/profile_default/startup
 
-run_command $INST nvim
+
+if command -v apt-get &> /dev/null; then
+  run_command $INST neovim
+elif command -v yum &> /dev/null; then
+  run_command $INST neovim
+elif command -v brew &> /dev/null; then
+  run_command $INST nvim
+else
+  error "None of apt-get, yum, or brew are installed"
+  exit 1
+fi
+
+
 run_command_if_not_exists $HOME/.config/nvim ln -s $HOME/.dotfiles/config/nvim $HOME/.config/nvim
 
 if [ "$(basename -- "$SHELL")" = "zsh" ]; then
@@ -91,8 +113,10 @@ if [[ " $* " == *" --mac "* ]]; then
     run_command_if_not_exists $HOME/.bordersrc  ln -s $HOME/.dotfiles/config/bordersrc $HOME/.bordersrc
     run_command_if_not_exists $HOME/.yabairc    ln -s $HOME/.dotfiles/config/yabairc $HOME/.yabairc
     run_command_if_not_exists $HOME/.skhdrc     ln -s $HOME/.dotfiles/config/skhdrc $HOME/.skhdrc
-    run_command_if_not_exists $HOME/.gitconfig  ln -s $HOME/.dotfiles/config/gitconfig $HOME/.gitconfig
 fi
+
+
+run_command_if_not_exists $HOME/.gitconfig  ln -s $HOME/.dotfiles/config/gitconfig $HOME/.gitconfig
 
 title "done installing dotfiles"
 
