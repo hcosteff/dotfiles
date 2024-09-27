@@ -8,8 +8,14 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="agnoster"
+if [[ -f ~/.REMOTE ]]; then
+    ZSH_THEME="gianu"
+else
+    ZSH_THEME="agnoster"
+fi
+
 DEFAULT_USER="$(whoami)"
+
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
@@ -24,7 +30,7 @@ CASE_SENSITIVE="true"
 # HYPHEN_INSENSITIVE="true"
 
 # Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
+ zstyle ':omz:update' mode disabled  # disable automatic updates
 # zstyle ':omz:update' mode auto      # update automatically without asking
 # zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
@@ -107,8 +113,31 @@ source $ZSH/oh-my-zsh.sh
 export PATH="/opt/homebrew/bin:$PATH"
 source ~/.dotfiles/load_all_bash_scripts.sh
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+HISTCONTROL=ignoreboth
+HISTSIZE=200000
+HISTFILESIZE=200000
+setopt nosharehistory
 
+zstyle ':completion:*' completer _expand _complete
+
+# add ~/bin to path
+PATH=$PATH:~/bin
+PATH=$PATH:~/.dotfiles/bin
+
+
+zle -A emacs-forward-word forward-word
+zle -A emacs-backward-word backward-word
+
+if [ ! -f ~/.REMOTE ]; then
+    iterm_settabcolors
+    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh || echo "Forgot to install fzf?"
+    [ -f ~/.iterm2_shell_integration.zsh ] && source ~/.iterm2_shell_integration.zsh || echo "Forgot to install iterm2_shell_integration?"
+fi
+
+if [[ -f ~/.REMOTE ]] && [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
+  tmx2 new-session -A -s ${1:-work};
+fi
+
+HOMEBREW_AUTO_UPDATE_SECS=7890000
