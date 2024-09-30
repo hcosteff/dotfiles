@@ -113,8 +113,6 @@ source $ZSH/oh-my-zsh.sh
 export PATH="/opt/homebrew/bin:$PATH"
 source ~/.dotfiles/load_all_bash_scripts.sh
 
-
-
 HISTCONTROL=ignoreboth
 HISTSIZE=200000
 HISTFILESIZE=200000
@@ -136,8 +134,6 @@ if [ ! -f ~/.REMOTE ]; then
     [ -f ~/.iterm2_shell_integration.zsh ] && source ~/.iterm2_shell_integration.zsh || echo "Forgot to install iterm2_shell_integration?"
 fi
 
-if [[ -f ~/.REMOTE ]] && [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
-  tmx2 new-session -A -s ${1:-work};
-fi
-
 HOMEBREW_AUTO_UPDATE_SECS=7890000
+
+source ~/.company_specific.sh
