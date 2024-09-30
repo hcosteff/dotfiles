@@ -4,23 +4,23 @@ alias grpe=grep
 alias gdt="git difftool"
 alias gmt="git mergetool"
 
+export EDITOR=nvim
+alias dotalias="$EDITOR ~/.dotfiles/bash/aliases.sh"
+alias dotrun="$EDITOR ~/.dotfiles/bash/run.sh"
 
-alias dotalias="sub ~/.dotfiles/bash/aliases.sh"
-alias dotrun="sub ~/.dotfiles/bash/run.sh"
+alias dotinst="$EDITOR ~/.dotfiles/install.sh"
+alias dotv="$EDITOR ~/.dotfiles/config/nvim/init.vim"
+alias dotgit="$EDITOR ~/.dotfiles/config/gitconfig"
+alias dotzshrc="$EDITOR ~/.dotfiles/config/zshrc"
 
-alias dotinst="sub ~/.dotfiles/install.sh"
-alias dotv="sub ~/.dotfiles/config/nvim/init.vim"
-alias dotgit="sub ~/.dotfiles/config/gitconfig"
-alias dotzshrc="sub ~/.dotfiles/config/zshrc"
+alias dotuseful="$EDITOR ~/.dotfiles/ipython_startup/useful.py"
+alias dotunpolished="$EDITOR ~/.dotfiles/ipython_startup/unpolished.py"
 
-alias dotuseful="sub ~/.dotfiles/ipython_startup/useful.py"
-alias dotunpolished="sub ~/.dotfiles/ipython_startup/unpolished.py"
+alias dotsheepdog="$EDITOR ~/.dotfiles/bin/sheepdog"
 
-alias dotsheepdog="sub ~/.dotfiles/bin/sheepdog"
-
-alias dotjankyborders="sub ~/.dotfiles/config/bordersrc"
-alias dotyabai="sub ~/.dotfiles/config/yabairc"
-alias dotskhd="sub ~/.dotfiles/config/skhdrc"
+alias dotjankyborders="$EDITOR ~/.dotfiles/config/bordersrc"
+alias dotyabai="$EDITOR ~/.dotfiles/config/yabairc"
+alias dotskhd="$EDITOR ~/.dotfiles/config/skhdrc"
 
 
 function glg() {

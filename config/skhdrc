@@ -23,7 +23,7 @@ alt - space : ~/scripts/yabai-cycle.sh
 shift + alt - v : yabai -m space --balance
 
 
-
+#escape - f: yabai -m space --balance
 
 # move window to space #
 cmd - f1 : yabai -m window --space 1;
