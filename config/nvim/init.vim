@@ -37,7 +37,7 @@ au BufWinLeave * call clearmatches()
 nnoremap <silent> <leader>rs :let _s=@/ <Bar> :%s/\s\+$//e <Bar> :let @/=_s <Bar> :nohl <Bar> :unlet _s <CR>
 
 " Reload init.vim
-noremap <leader>src :source ~/.config/nvim/init.vim<CR>
+noremap <leader>rel :source ~/.config/nvim/init.vim<CR>
 
 " Switch header and cpp
 au BufEnter *.h  let b:fswitchdst = "c,cpp,cc,m"
