@@ -1,7 +1,7 @@
 # This is Git's per-user configuration file.
 [user]
     name = Hillel Costeff
-    email = hillel@vastdata.com
+    email = hcosteff@gmail.com
 
 [diff]
     tool = bc3
