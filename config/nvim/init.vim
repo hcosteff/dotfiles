@@ -3,27 +3,35 @@ call plug#begin()
 " Plug 'neoclide/coc.nvim', {'branch':'release'}
 
 " On-demand loading
-Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }
-Plug 'mg979/vim-visual-multi', {'branch': 'master'}
-Plug 'ellisonleao/gruvbox.nvim', {'branch':'main'}
+Plug 'ryanoasis/vim-devicons'
+Plug 'preservim/nerdtree'
+"Plug 'nvim-tree/nvim-web-devicons' " optional
+"Plug 'nvim-tree/nvim-tree.lua'
+
+Plug 'loctvl842/monokai-pro.nvim'
 Plug 'derekwyatt/vim-fswitch'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'RRethy/vim-illuminate'
-Plug 'pocco81/auto-save.nvim'
+
 "Plug 'ludovicchabant/vim-gutentags'
 
-Plug 'itchyny/lightline.vim'
+
+
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+"Plug 'itchyny/lightline.vim'
 call plug#end()
 
 let mapleader=" "
 
 nnoremap <leader>plug :PlugInstall<CR>
 
-" gruvbox settings
-set background=dark " or light if you want light mode
-colorscheme gruvbox
+" theme settings
+set background=dark
+colorscheme monokai-pro
 
+let g:lightline = {'colorscheme': 'monokaipro'}
 
 " highlight extra whitespace
 highlight ExtraWhitespace ctermbg=red guibg=red
@@ -58,7 +66,7 @@ set completeopt=noinsert,menuone,noselect " Modifies the auto-complete menu to b
 set cursorline " Highlights the current line in the editor
 set title " Show file title
 set wildmenu " Show a more advance menu
-set cc=80 " Show at 80 column a border for good code style
+set cc=160 " Show at 80 column a border for good code style
 filetype plugin indent on   " Allow auto-indenting depending on file type
 syntax on
 set ttyfast " Speed up scrolling in Vim
@@ -102,7 +110,11 @@ nnoremap <leader>o :Files<CR>
 nnoremap <leader>h :History:<CR>
 nnoremap <leader>t :Tags<CR>
 
-nnoremap q :q<CR>
+nnoremap <leader>11 :q!<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>w :w<CR>
+nnoremap <leader>ww :wq<CR>
+
 
 " Nerdtree config
 let g:NERDTreeWinSize=80
@@ -126,6 +138,5 @@ nnoremap * *N
 
 " jump to containing curly braces start (ctrl-5 also works here)
 map <C-]> [{
-
 
 
