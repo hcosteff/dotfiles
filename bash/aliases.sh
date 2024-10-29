@@ -23,6 +23,8 @@ alias dotyabai="$EDITOR ~/.dotfiles/config/yabairc"
 alias dotskhd="$EDITOR ~/.dotfiles/config/skhdrc"
 
 
+alias ll="ls -lAh"
+
 function glg() {
     git lg | head -n10000 | grep "$(git rev-parse --short $(git getbase))" -B 999
 }

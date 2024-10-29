@@ -30,6 +30,7 @@ yabai -m rule --add app="^System Settings$" manage=off
 yabai -m rule --add app="^Calculator$" manage=off
 yabai -m rule --add app="^Karabiner-Elements$" manage=off
 yabai -m rule --add app="^Messages$" manage=off
-
+yabai -m rule --add app="^Sign in$" manage=off
+#yabai -m rule --add app!="Emacs|Firefox" manage=off
 
 ~/.bordersrc &

@@ -1,19 +1,16 @@
 # change window focus within space
 
 
-#change focus between external displays (left and right)
-alt - s: yabai -m display --focus west
-alt - g: yabai -m display --focus east
-
-
 # rotate layout clockwise
 shift + alt - r : yabai -m space --rotate 270
 
 # toggle window float
-shift + alt - t : yabai -m window --toggle float --grid 4:4:1:1:2:2
+#alt - q : yabai -m window --toggle float --grid 4:4:1:1:2:2
+alt - q : yabai -m window --toggle float --grid 16:16:1:1:14:14
 
 # maximize a window
-shift + alt - f : yabai -m window --toggle zoom-fullscreen
+alt - f : yabai -m window --toggle zoom-fullscreen
+#alt - f : yabai -m window --grid 1:1:0:0:1:1
 
 # reserved
 alt - space : ~/scripts/yabai-cycle.sh
@@ -37,7 +34,6 @@ cmd - f7 : yabai -m window --space 7;
 
 
 # stop/start/restart yabai
-ctrl + alt - q : yabai --stop-service
-ctrl + alt - s : yabai --start-service
+ctrl + alt - s : skhd --restart-service
 ctrl + alt - r : yabai --restart-service
 ctrl + alt - j : pkill borders; borders
