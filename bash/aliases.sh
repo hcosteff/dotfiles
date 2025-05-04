@@ -77,7 +77,7 @@ function iterm_settabcolors() {
     echo -e "\033]Ph${bg_color}\033\\"
 
     if [ "$(iterm_num_splits)" -eq 1 ]; then 
-        tabset  --mode 2 "$name"
+        tabset  --hash "$name" > /dev/null
     else
         tabset  --badge "$name"
     fi
