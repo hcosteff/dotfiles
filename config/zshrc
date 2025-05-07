@@ -114,9 +114,12 @@ export PATH="/opt/homebrew/bin:$PATH"
 source ~/.dotfiles/load_all_bash_scripts.sh
 
 HISTCONTROL=ignoreboth
-HISTSIZE=200000
-HISTFILESIZE=200000
-setopt nosharehistory
+HISTSIZE=500000
+SAVEHIST=500000
+setopt appendhistory
+setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
+setopt SHARE_HISTORY             # Share history between all sessions.
+
 
 zstyle ':completion:*' completer _expand _complete
 

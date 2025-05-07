@@ -26,7 +26,7 @@ alias dotskhd="$EDITOR ~/.dotfiles/config/skhdrc"
 alias ll="ls -lAh"
 
 function glg() {
-    git lg | head -n10000 | grep "$(git rev-parse --short $(git getbase))" -B 999
+    git lg | head -$(( $LINES / 3 ))
 }
 
 function git_branches_by_date() {
